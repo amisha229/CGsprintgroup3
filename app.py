@@ -32,10 +32,10 @@ except requests.exceptions.RequestException:
 
 movie_names = [m["movie_name"] for m in movies]
 
-# DROPDOWN
+
 selected_movie = st.selectbox("Select Movie", movie_names) if movie_names else None
 
-# SHOW DETAILS
+
 if selected_movie:
     for m in movies:
         if m["movie_name"] == selected_movie:
