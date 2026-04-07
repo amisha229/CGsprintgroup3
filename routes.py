@@ -4,7 +4,7 @@ from models import Movie
 
 app = FastAPI()
 
-# POST METHOD (Member 2)
+
 @app.post("/add_movie")
 def add_movie(movie_name: str, hero: str, heroine: str):
     db = SessionLocal()
@@ -15,7 +15,6 @@ def add_movie(movie_name: str, hero: str, heroine: str):
     return {"message": "Movie added successfully"}
 
 
-# GET METHOD (Member 3)
 @app.get("/get_movies")
 def get_movies():
     db = SessionLocal()
