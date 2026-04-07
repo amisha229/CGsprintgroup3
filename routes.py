@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from sqlalchemy import func
+from sqlalchemy.exc import SQLAlchemyError
 from db import SessionLocal
 from models import Movie
 
@@ -8,11 +10,24 @@ app = FastAPI()
 @app.post("/add_movie")
 def add_movie(movie_name: str, hero: str, heroine: str):
     db = SessionLocal()
-    new_movie = Movie(movie_name=movie_name, hero=hero, heroine=heroine)
-    db.add(new_movie)
-    db.commit()
-    db.close()
-    return {"message": "Movie added successfully"}
+    try:
+        current_max_id = db.query(func.max(Movie.id)).scalar()
+        next_id = (current_max_id or 0) + 1
+
+        new_movie = Movie(
+            id=next_id,
+            movie_name=movie_name,
+            hero=hero,
+            heroine=heroine,
+        )
+        db.add(new_movie)
+        db.commit()
+        return {"message": "Movie added successfully", "id": next_id}
+    except SQLAlchemyError as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(exc)}")
+    finally:
+        db.close()
 
 
 # GET METHOD (Member 3)
